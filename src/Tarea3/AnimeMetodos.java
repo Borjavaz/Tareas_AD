@@ -1,43 +1,40 @@
 package Tarea3;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AnimeMetodos {
+    private final Conexion conexion = new Conexion();
 
-    // --- CREATE: Inserta un nuevo registro ---
-    public void insert(Anime anime) {
+    // CREATE
+    public void insertar(Anime anime) {
         String sql = "INSERT INTO anime (nome, descripcion, data, puntuacion) VALUES (?, ?, ?, ?)";
-        // try-with-resources asegura que la conexión y el PreparedStatement se cierren automáticamente
-        try (Connection conn = new Conexion().conexion();
+        try (Connection conn = conexion.conexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, anime.getNome());
             pstmt.setString(2, anime.getDescripcion());
             pstmt.setDate(3, anime.getData());
             pstmt.setInt(4, anime.getPuntuacion());
+            pstmt.executeUpdate();
 
-            int filasAfectadas = pstmt.executeUpdate();
-            if (filasAfectadas > 0) {
-                System.out.println(">> REXISTRO CREADO: " + anime.getNome());
-            }
+            System.out.println("Registro insertado correctamente.");
+
         } catch (SQLException e) {
-            System.err.println("Error al insertar el registro: " + e.getMessage());
+            System.err.println("Error al insertar: " + e.getMessage());
         }
     }
 
-    // --- READ: Lee todos los registros ---
-    public List<Anime> getAll() {
-        List<Anime> animes = new ArrayList<>();
-        String sql = "SELECT nome, descripcion, data, puntuacion FROM anime";
+    // READ - todos los registros
+    public List<Anime> listarTodos() {
+        List<Anime> lista = new ArrayList<>();
+        String sql = "SELECT * FROM anime";
 
-        try (Connection conn = new Conexion().conexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+        try (Connection conn = conexion.conexion();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 Anime anime = new Anime(
@@ -46,80 +43,71 @@ public class AnimeMetodos {
                         rs.getDate("data"),
                         rs.getInt("puntuacion")
                 );
-                animes.add(anime);
+                lista.add(anime);
             }
+
         } catch (SQLException e) {
-            System.err.println("Error al leer todos los registros: " + e.getMessage());
+            System.err.println("Error al leer datos: " + e.getMessage());
         }
-        return animes;
+        return lista;
     }
 
-    // --- READ: Lee un registro filtrado por nombre ---
-    public Anime getByNome(String nome) {
-        String sql = "SELECT nome, descripcion, data, puntuacion FROM anime WHERE nome = ?";
-        Anime anime = null;
-
-        try (Connection conn = new Conexion().conexion();
+    // READ - filtrado por nombre
+    public Anime buscarPorNome(String nome) {
+        String sql = "SELECT * FROM anime WHERE nome = ?";
+        try (Connection conn = conexion.conexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, nome);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) { // Solo esperamos una fila, ya que 'nome' es único
-                    anime = new Anime(
-                            rs.getString("nome"),
-                            rs.getString("descripcion"),
-                            rs.getDate("data"),
-                            rs.getInt("puntuacion")
-                    );
-                }
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Anime(
+                        rs.getString("nome"),
+                        rs.getString("descripcion"),
+                        rs.getDate("data"),
+                        rs.getInt("puntuacion")
+                );
             }
+
         } catch (SQLException e) {
-            System.err.println("Error al leer registro por nombre: " + e.getMessage());
+            System.err.println("Error al buscar: " + e.getMessage());
         }
-        return anime;
+        return null;
     }
 
-    // --- UPDATE: Actualiza un registro ---
-    public void update(Anime anime) {
-        // La actualización se basa en el campo 'nome' (asumiendo que es la clave)
+    // UPDATE
+    public void actualizar(Anime anime) {
         String sql = "UPDATE anime SET descripcion = ?, data = ?, puntuacion = ? WHERE nome = ?";
-
-        try (Connection conn = new Conexion().conexion();
+        try (Connection conn = conexion.conexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, anime.getDescripcion());
             pstmt.setDate(2, anime.getData());
             pstmt.setInt(3, anime.getPuntuacion());
-            pstmt.setString(4, anime.getNome()); // WHERE clause
+            pstmt.setString(4, anime.getNome());
+            int filas = pstmt.executeUpdate();
 
-            int filasAfectadas = pstmt.executeUpdate();
-            if (filasAfectadas > 0) {
-                System.out.println(">> REXISTRO ACTUALIZADO: " + anime.getNome());
-            } else {
-                System.out.println(">> Non se atopou o rexistro a actualizar: " + anime.getNome());
-            }
+            System.out.println(filas + " registro actualizado.");
+
         } catch (SQLException e) {
-            System.err.println("Error al actualizar el registro: " + e.getMessage());
+            System.err.println("Error al actualizar: " + e.getMessage());
         }
     }
 
-    // --- DELETE: Elimina un registro ---
-    public void delete(String nome) {
+    // DELETE
+    public void eliminar(String nome) {
         String sql = "DELETE FROM anime WHERE nome = ?";
-
-        try (Connection conn = new Conexion().conexion();
+        try (Connection conn = conexion.conexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, nome);
+            int filas = pstmt.executeUpdate();
 
-            int filasAfectadas = pstmt.executeUpdate();
-            if (filasAfectadas > 0) {
-                System.out.println(">> REXISTRO ELIMINADO: " + nome);
-            } else {
-                System.out.println(">> Non se atopou o rexistro a eliminar: " + nome);
-            }
+            System.out.println(filas + " registro eliminado.");
+
         } catch (SQLException e) {
-            System.err.println("Error al eliminar el registro: " + e.getMessage());
+            System.err.println("Error al eliminar: " + e.getMessage());
         }
     }
 }
