@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Conexion {
 
     // Variables de conexión
-    private final String url = "jdbc:postgresql://192.168.9.80:5432/postgresql";
+    private final String url = "jdbc:postgresql://10.0.9.122:5432/postgresql";
     private final String usuario = "postgres";
     private final String contraseña = "admin";
 

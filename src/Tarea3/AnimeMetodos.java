@@ -12,13 +12,13 @@ public class AnimeMetodos {
     public void insertar(Anime anime) {
         String sql = "INSERT INTO anime (nome, descripcion, data, puntuacion) VALUES (?, ?, ?, ?)";
         try (Connection conn = conexion.conexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, anime.getNome());
-            pstmt.setString(2, anime.getDescripcion());
-            pstmt.setDate(3, anime.getData());
-            pstmt.setInt(4, anime.getPuntuacion());
-            pstmt.executeUpdate();
+            ps.setString(1, anime.getNome());
+            ps.setString(2, anime.getDescripcion());
+            ps.setDate(3, anime.getData());
+            ps.setInt(4, anime.getPuntuacion());
+            ps.executeUpdate();
 
             System.out.println("Registro insertado correctamente.");
 
@@ -56,10 +56,10 @@ public class AnimeMetodos {
     public Anime buscarPorNome(String nome) {
         String sql = "SELECT * FROM anime WHERE nome = ?";
         try (Connection conn = conexion.conexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, nome);
-            ResultSet rs = pstmt.executeQuery();
+            ps.setString(1, nome);
+            ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 return new Anime(
@@ -80,13 +80,13 @@ public class AnimeMetodos {
     public void actualizar(Anime anime) {
         String sql = "UPDATE anime SET descripcion = ?, data = ?, puntuacion = ? WHERE nome = ?";
         try (Connection conn = conexion.conexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, anime.getDescripcion());
-            pstmt.setDate(2, anime.getData());
-            pstmt.setInt(3, anime.getPuntuacion());
-            pstmt.setString(4, anime.getNome());
-            int filas = pstmt.executeUpdate();
+            ps.setString(1, anime.getDescripcion());
+            ps.setDate(2, anime.getData());
+            ps.setInt(3, anime.getPuntuacion());
+            ps.setString(4, anime.getNome());
+            int filas = ps.executeUpdate();
 
             System.out.println(filas + " registro actualizado.");
 
@@ -99,10 +99,10 @@ public class AnimeMetodos {
     public void eliminar(String nome) {
         String sql = "DELETE FROM anime WHERE nome = ?";
         try (Connection conn = conexion.conexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, nome);
-            int filas = pstmt.executeUpdate();
+            ps.setString(1, nome);
+            int filas = ps.executeUpdate();
 
             System.out.println(filas + " registro eliminado.");
 
