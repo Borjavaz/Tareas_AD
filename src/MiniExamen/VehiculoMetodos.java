@@ -1,7 +1,5 @@
 package MiniExamen;
 
-import Tarea3.Anime;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +38,7 @@ public class VehiculoMetodos {
 
             while (rs.next()) {
                 Vehiculo vehiculo = new Vehiculo(
+                        rs.getInt("id"),
                         rs.getString("marca"),
                         rs.getString("modelo"),
                         rs.getInt("ano"),
@@ -56,7 +55,7 @@ public class VehiculoMetodos {
 
     // UPDATE
     public void modificar(Vehiculo vehiculo) {
-        String sql = "UPDATE vehiculo SET modelo = ?, ano = ?, descripcion = ? WHERE marca = ?";
+        String sql = "UPDATE vehiculo SET marca = ?, modelo = ?, ano = ?, descripcion = ? WHERE id = ?";
         try (Connection conn = conexion.conexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -64,12 +63,37 @@ public class VehiculoMetodos {
             ps.setString(2, vehiculo.getModelo());
             ps.setInt(3, vehiculo.getAno());
             ps.setString(4, vehiculo.getDescripcion());
+            ps.setInt(5, vehiculo.getId());
             int filas = ps.executeUpdate();
 
             System.out.println(filas + " registro actualizado.");
 
         } catch (SQLException e) {
             System.err.println("Error al actualizar: " + e.getMessage());
+        }
+    }
+
+    // En VehiculoMetodos.java
+
+    // Nuevo método para eliminar
+    public void eliminarVehiculoYInventario(InventarioTendaMetodos metodoInventario, int id, String modelo) {
+
+        // Primero, eliminar todos los registros de inventario asociados (clave foránea)
+        metodoInventario.eliminarInventario(id);
+
+        // Segundo, eliminar el vehículo (usando ID y Modelo, según su solicitud)
+        String sql = "DELETE FROM vehiculo WHERE id = ? AND modelo = ?";
+        try (Connection conn = conexion.conexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.setString(2, modelo);
+            int filas = ps.executeUpdate();
+
+            System.out.println(filas + " registro de vehículo eliminado (ID: " + id + ", Modelo: " + modelo + ").");
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar vehículo: " + e.getMessage());
         }
     }
 }
