@@ -18,7 +18,7 @@ public class CrearAutoresXML {
             XMLStreamWriter writer = factory.createXMLStreamWriter(new FileWriter(rutaFicheiro));
 
             // Declaración version XML
-            writer.writeStartDocument("1.0");
+            writer.writeStartDocument("UTF-8","1.0");
 
             // Elemento raiz
             writer.writeStartElement("autores");
