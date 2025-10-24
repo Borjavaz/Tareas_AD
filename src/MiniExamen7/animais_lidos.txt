@@ -1,0 +1,5 @@
+Animal{id=1, nome='Simba', especie='León', anoChegada=2019, descricion='Rei da sabana, forte e respectado.'}
+Animal{id=2, nome='Dumbo', especie='Elefante', anoChegada=2021, descricion='Elefante xigante con orellas enormes.'}
+Animal{id=3, nome='Marty', especie='Cebra', anoChegada=2020, descricion='Moi sociable e amante de correr.'}
+Animal{id=4, nome='Gloria', especie='Hipopótamo', anoChegada=2022, descricion='Tranquila pero con moita forza.'}
+Animal{id=5, nome='Skipper', especie='Pingüín', anoChegada=2023, descricion='Moi intelixente e líder nato.'}
